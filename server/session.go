@@ -17,6 +17,7 @@ func session(connection net.Conn) {
 		scanner:    *bufio.NewScanner(connection),
 	}
 	if err := user.login(); err != nil {
+		user.closeSession()
 		return
 	}
 
@@ -28,4 +29,5 @@ func (this *User) login() error {
 }
 
 func (this *User) closeSession() {
+	this.tell("end")
 }
