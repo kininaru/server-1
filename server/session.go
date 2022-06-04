@@ -5,29 +5,29 @@ import (
 	"net"
 )
 
-type User struct {
+type UserConnection struct {
 	connection net.Conn
 	buf        []byte
 	scanner    bufio.Scanner
 }
 
 func session(connection net.Conn) {
-	user := &User{
+	userConnection := &UserConnection{
 		connection: connection,
 		scanner:    *bufio.NewScanner(connection),
 	}
-	if err := user.login(); err != nil {
-		user.closeSession()
+	if err := userConnection.login(); err != nil {
+		userConnection.closeSession()
 		return
 	}
 
-	user.closeSession()
+	userConnection.closeSession()
 }
 
-func (this *User) login() error {
+func (this *UserConnection) login() error {
 
 }
 
-func (this *User) closeSession() {
+func (this *UserConnection) closeSession() {
 	this.tell("end")
 }
