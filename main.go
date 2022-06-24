@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println("server is gonna run in port 23333")
+	fmt.Println("Chess server listening at: 0.0.0.0:23333")
 	server.InitTcpServer(23333)
 }

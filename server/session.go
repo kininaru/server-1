@@ -3,31 +3,50 @@ package server
 import (
 	"bufio"
 	"net"
+	"time"
 )
 
 type UserConnection struct {
 	connection net.Conn
-	buf        []byte
-	scanner    bufio.Scanner
+	reader     bufio.Reader
+	sid        int
 }
 
 func session(connection net.Conn) {
 	userConnection := &UserConnection{
 		connection: connection,
-		scanner:    *bufio.NewScanner(connection),
+		reader:     *bufio.NewReader(connection),
 	}
-	if err := userConnection.login(); err != nil {
-		userConnection.closeSession()
-		return
+	userConnection.tell("y")
+
+	userConnection.sid = len(UserList)
+	UserList = append(UserList, userConnection)
+
+	targetSid := -1
+	if userConnection.sid%2 == 0 {
+		for userConnection.sid == len(UserList)-1 {
+			time.Sleep(10 * time.Second)
+		}
+		targetSid = userConnection.sid + 1
+		userConnection.tell("0")
+	} else {
+		userConnection.tell("1")
+		targetSid = userConnection.sid - 1
 	}
 
-	userConnection.closeSession()
-}
+	var msg string
+	var err error
+	for {
+		msg, err = userConnection.read()
+		if err != nil {
+			UserList[targetSid].tell("ed")
+			break
+		}
+		err := UserList[targetSid].tell(msg)
+		if msg == "ed" || err != nil {
+			break
+		}
+	}
 
-func (this *UserConnection) login() error {
-
-}
-
-func (this *UserConnection) closeSession() {
-	this.tell("end")
+	userConnection.tell("ed")
 }

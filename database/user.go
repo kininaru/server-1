@@ -1,9 +1,15 @@
 package database
 
 type User struct {
-	Uid string
+	Id       int
+	Password string
+	MatchId  int
 }
 
 func AddUser(user *User) {
+
+}
+
+func RemoveUser(user *User) {
 
 }
